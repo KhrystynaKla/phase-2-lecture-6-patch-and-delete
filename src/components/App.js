@@ -43,15 +43,35 @@ function App() {
     .then(response => response.json())
     .then(newPet => setPets([...pets, newPet]))
   }
+  
 
   function updateFormData(event){
     setFormData({...formData, [event.target.name]: event.target.value})
   }
 
+  function updatePet(pet){
+    fetch(`http://localhost:4000/pets/${pet.id}`,{
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body:JSON.stringify({likes: pet.likes+1})
+    })
+    .then(res=>res.json())
+    .then(inf=> {
+      const newPets=pets.map(p=>{
+        if(p.id===inf.id) return inf;
+        return p; 
+      })
+      setPets(newPets)
+    })
+  }
+
   return (
     <div className="app">
       <Header />
-      <PetPage pets={filteredPets} setSearchText={setSearchText} adoptPet={adoptPet} addPet={addPet} updateFormData={updateFormData} />
+      <PetPage updatePet={updatePet} pets={filteredPets} setSearchText={setSearchText} adoptPet={adoptPet} addPet={addPet} updateFormData={updateFormData} />
     </div>
   );
 }
